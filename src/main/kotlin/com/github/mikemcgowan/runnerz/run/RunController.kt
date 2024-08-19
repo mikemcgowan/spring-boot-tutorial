@@ -21,19 +21,21 @@ class RunController(private val repo: RunRepository) {
 
     @GetMapping("/{id}")
     fun findById(@PathVariable("id") id: Int): Run? =
-        repo.findById(id) ?: throw RunNotFoundException()
+        repo.findById(id).orElseThrow { RunNotFoundException() }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     fun create(@Valid @RequestBody run: Run): Run =
-        repo.create(run)
+        repo.save(run)
 
-    @PutMapping("/{id}")
-    fun update(@PathVariable("id") id: Int, @Valid @RequestBody run: Run): Run? =
-        repo.update(id, run)
+    @PutMapping
+    fun update(@Valid @RequestBody run: Run): Run? {
+        repo.save(run)
+        return findById(run.id)
+    }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     fun delete(@PathVariable("id") id: Int) =
-        repo.delete(id)
+        findById(id)?.let { repo.delete(it) }
 }

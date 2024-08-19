@@ -14,7 +14,10 @@ class RunJsonDataLoader(
     private val objectMapper: ObjectMapper,
 ) : CommandLineRunner {
     override fun run(vararg args: String?) {
-        if (runRepository.isNotEmpty()) return
+        if (runRepository.count() > 0) {
+            logger.info("Not reading runs from JSON data as database isn't empty")
+            return
+        }
         try {
             TypeReference::class.java.getResourceAsStream("/data/runs.json").use { inputStream: InputStream ->
                 val allRuns = objectMapper.readValue(inputStream, Runs::class.java)
