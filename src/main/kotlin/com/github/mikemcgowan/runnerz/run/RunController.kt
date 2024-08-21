@@ -20,7 +20,7 @@ class RunController(private val repo: RunRepository) {
         repo.findAll()
 
     @GetMapping("/{id}")
-    fun findById(@PathVariable("id") id: Int): Run? =
+    fun findById(@PathVariable id: Int): Run? =
         repo.findById(id).orElseThrow { RunNotFoundException() }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -36,6 +36,10 @@ class RunController(private val repo: RunRepository) {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable("id") id: Int) =
+    fun delete(@PathVariable id: Int) =
         findById(id)?.let { repo.delete(it) }
+
+    @GetMapping("/location/{location}")
+    fun findByLocation(@PathVariable location: String) =
+        repo.findAllByLocation(location)
 }
